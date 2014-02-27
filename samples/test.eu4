@@ -1,0 +1,78 @@
+speed=0
+multiplayer_random_seed=281
+multiplayer_random_count=3931208
+monarch=9040
+cardinal=75
+leader=6302
+advisor=15771
+rebel=18238
+unit=4250
+flags=
+{
+	no_legatus_natus=1445.6.9
+	lollard_heresy=1447.2.7
+	counter_reformation=1547.4.5
+	japan_has_encountered_the_west=1552.11.21
+	dutch_revolt=1566.3.26
+}
+gameplaysettings=
+{
+	setgameplayoptions=
+	{
+1 1 2 1 0 0 0 1 0 1 0 	}
+}
+start_date="1444.11.11"
+trade=
+{
+	node=
+	{
+		definitions="california"
+		current=0.109
+		local_value=0.726
+		outgoing=0.617
+		value_added_outgoing=0.617
+		retention=0.150
+		steer_power=0.500
+		steer_power=0.500
+		total=78.236
+		max=10.360
+		collector_power=11.706
+		pull_power=66.530
+		retain_power=11.706
+		highest_power=1.120
+		power=
+		{
+			country="POR"
+			current=0.000
+			max_power=0.000
+			province_power=0.000
+			ship_power=0.000
+			power_fraction=0.000
+			power_fraction_push=0.000
+			money=0.000
+			total=0.000
+			steer_power=0
+			type=0
+			actual_added_value=0.000
+			has_trader=no
+			has_capital=no
+			has_subject=no
+		}
+	}
+}
+dlc_enabled=
+{
+"100 Years War Unit Pack"
+ "American Dream"
+ "Conquest of Constantinople Music Pack"
+ "Conquest of Paradise"
+ "Conquistadors Unit Pack"
+ "Horsemen of the Crescent Unit Pack"
+ "National Monuments"
+ "Native Americans Unit Pack"
+ "Purple Phoenix"
+ "Songs of Yuletide"
+ "Songs of the New World"
+ "Star and Crescent"
+ "Winged Hussars Unit Pack"
+ }
