@@ -1,19 +1,20 @@
-#!/usr/bin/env node
+define(["eu/save"], function(Save) {
 
-var fs = require("fs");
-    //, process = require("process");
+    // Extract a local EU save file
+    function from_local_file(filepath) {
+        var fs = require("fs");
 
-var reader = (function(reader) {
-    function from_file(filepath) {
         fs.readFile(filepath, function (err, data) {
             if(err) {
                 console.log(err);
+                return err;
             } else {
-                reader.from_string(data);
+                return from_string(data);
             }
         });
     }
 
+    // Extract an EU save string
     function from_string(data) {
         var key = "[\\w]+";
         var value = "\"?[\\w\\. ]+\"?";
@@ -30,10 +31,11 @@ var reader = (function(reader) {
             +"|"
             +section_end
             +"|"
-            // array of values
             +array_of_values
             +")"
         , "g");
+
+        var res = data.toString().match(regex);
 
         function type(s) {
             // Matchs order by priority
@@ -44,18 +46,18 @@ var reader = (function(reader) {
                 array_of_values: array_of_values
             }, matchs_found = [];
 
-            Object.keys(matchs).forEach(function (element) {
-                if(s.match(matchs[element]) !== null) {
-                    matchs_found.push(element);
+            Object.keys(matchs).forEach(function (regex_name) {
+                var res = s.match(matchs[regex_name]);
+                if(res !== null) {
+                    // Store match name + match result
+                    matchs_found.push([regex_name, res.slice(1)]);
                 }
             });
 
             return matchs_found[0];
         }
 
-        var res = data.toString().match(regex);
-
-        var current_sections = [], items = [];
+        var save_data = new Save(), current_sections = [], items = [];
         for(var i=0; i < res.length; i++) {
             var s = res[i], st = s.trim();
 
@@ -64,12 +66,11 @@ var reader = (function(reader) {
                     var begin = current_sections.length?current_sections.join(".")+".":"";
                     console.log(begin + key + " = " + value);
                 },
-                key_value: function () {
-                    var res = s.match(key_value);
-                    fcts['display_key_value'](current_sections, res[1], res[2]);
+                key_value: function (key, value) {
+                    fcts['display_key_value'](current_sections, key, value);
                 },
-                section_begin: function () {
-                    current_sections.push(s.match(section_begin)[1].trim()); items = [];
+                section_begin: function (section_name) {
+                    current_sections.push(section_name); items = [];
                 },
                 section_end: function () {
                     if(items.length > 0) {
@@ -84,18 +85,15 @@ var reader = (function(reader) {
                 },
                 array_of_values: function () { items.push(st); }
             };
-            fcts[type(s)]();
+            var s_type = type(s);
+            fcts[s_type[0]].apply(null, s_type[1]);
         }
+
+        return save_data;
     }
 
-    reader.from_file = from_file;
-    reader.from_string = from_string;
-
-    return reader;
-})({});
-
-if(process.argv.length > 2) {
-    reader.from_file(process.argv[2]);
-} else {
-    console.log("Provide .eu4 file in command line.");
-}
+    return {
+        from_local_file: from_local_file,
+        from_string: from_string
+    };
+});
