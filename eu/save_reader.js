@@ -1,4 +1,4 @@
-define(["eu/save"], function(Save) {
+define(["eu/save", "eu/section"], function(Save, Section) {
 
     // Extract a local EU save file
     // Call handler with (err, save)
@@ -16,13 +16,18 @@ define(["eu/save"], function(Save) {
 
     // Extract an EU save string
     function from_string(data) {
-        var key = "[^\\s\\{\\}]+";
-        var value = "\"?"+key+"\"?";
-        var begin_of_section = "";
-        var key_value = "(\s*"+key+")=("+value+")";
-        var section_begin = "(\s*"+key+")\\s*=\\s*\\{";
-        var section_end = "[ \t]*(})\s*";
-        var array_of_values = "((?:"+value+"[ \t]*)+)";
+        var data = data.toString();
+
+        var save_type = data.match(/\w+\n/);
+        data = data.slice(data.indexOf('\n'));
+
+        var key_char = "[\\w\\.-]" // "[^\\s={]" // 
+          , key = key_char+"+"
+          , value = '(?:' + '"[^"]+"' + '|' + key + ')'
+          , key_value = "(\\s*"+key+")=("+value+")"
+          , section_begin = "("+key+")\\s*=\\s*\\{"
+          , section_end = "}"
+          , array_of_values = "((?:"+value+"\\s*)+)";
 
         var regex = new RegExp("(?:"
             +key_value
@@ -35,7 +40,7 @@ define(["eu/save"], function(Save) {
             +")"
         , "g");
 
-        var res = data.toString().match(regex);
+        var res = data.match(regex);
 
         function type(s) {
             // Matchs order by priority
@@ -57,40 +62,56 @@ define(["eu/save"], function(Save) {
             return matchs_found[0];
         }
 
-        var save_data = new Save(), current_section = [], items = [];
+        var current_section = new Section(), debug=false, depth_indent = "", items = [];
+        var fcts = {
+            key_value: function (key, value) {
+                key = key.trim();
+                value = value.trim();
+
+                if(debug) console.log(depth_indent+'<item name="'+key+'" value="'+value.replace(/^"|"$/g, "")+'" />');
+                current_section.add_element(key, value.replace(/^"|"$/g, ""));
+            },
+            section_begin: function (section_name) {
+                section_name = section_name.trim();
+
+                if(debug) console.log(depth_indent+'<section name="'+section_name+'">');
+                depth_indent += "    ";
+                current_section = new Section(section_name, current_section);
+            },
+            section_end: function () {
+                depth_indent = depth_indent.slice(0, -4);
+                if(debug) console.log(depth_indent+"</section>");
+                
+                if(items.length > 0) {
+                    // Current section is not a section but list
+                    current_section.parent.add_element(current_section.name, items);
+                    // Clear list
+                    items = [];
+                } else {
+                    // Add current section in parent's elements
+                    current_section.parent.add_element(current_section.name, current_section);
+                }
+                current_section = current_section.parent;
+            },
+            array_of_values: function (values) {
+                values = values.replace(/\s+/g, ' ').split(' ').filter(function(element) {
+                    return element !== "";
+                })
+
+                if(debug) console.log(depth_indent+'<array value="'+values.join(" ")+'" />');
+
+                items = values;
+            }
+        };
         for(var i=0; i < res.length; i++) {
-            var s = res[i], st = s.trim();
-
-            var fcts = {
-                display_key_value: function (current_section, key, value) {
-                    var begin = current_section.length?current_section.join(".")+".":"";
-                    console.log(begin + key + " = " + value);
-                    save_data.add_element(current_section, key, value);
-                },
-                key_value: function (key, value) {
-                    fcts['display_key_value'](current_section, key, value);
-                },
-                section_begin: function (section_name) {
-                    current_section.push(section_name); items = [];
-                },
-                section_end: function () {
-                    if(items.length > 0) {
-                        fcts['display_key_value'](
-                            current_section.slice(0, -1),
-                            current_section.slice(-1),
-                            items.join(","));
-                        // Clear list
-                        for(var i=0; i<items.length; i++) items.pop();
-                    }
-                    current_section.pop();
-                },
-                array_of_values: function () { items.push(st); }
-            };
-            var s_type = type(s);
-            fcts[s_type[0]].apply(null, s_type[1]);
+            var current_type = type(res[i]);
+            fcts[current_type[0]].apply(null, current_type[1]);
         }
-
-        return save_data;
+        // Fix missing section_end
+        while(current_section.parent !== undefined) {
+            fcts['section_end']();
+        }
+        return new Save(save_type, current_section);
     }
 
     return {

@@ -16,7 +16,7 @@ requirejs(["eu/save_reader"], function main(save_reader) {
             if(err) {
                 console.log("Error: " + err);
             } else {
-                console.log(save.to_json());
+                console.log(JSON.stringify(save.to_json()));
             }
         });
     } else {
