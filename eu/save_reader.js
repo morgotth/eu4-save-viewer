@@ -1,26 +1,26 @@
 define(["eu/save"], function(Save) {
 
     // Extract a local EU save file
-    function from_local_file(filepath) {
+    // Call handler with (err, save)
+    function from_local_file(filepath, handler) {
         var fs = require("fs");
 
         fs.readFile(filepath, function (err, data) {
             if(err) {
-                console.log(err);
-                return err;
+                handler(err);
             } else {
-                return from_string(data);
+                handler(null, from_string(data));
             }
         });
     }
 
     // Extract an EU save string
     function from_string(data) {
-        var key = "[\\w]+";
-        var value = "\"?[\\w\\. ]+\"?";
+        var key = "[^\\s\\{\\}]+";
+        var value = "\"?"+key+"\"?";
         var begin_of_section = "";
         var key_value = "(\s*"+key+")=("+value+")";
-        var section_begin = "(\s*"+key+")=\\s*\\{";
+        var section_begin = "(\s*"+key+")\\s*=\\s*\\{";
         var section_end = "[ \t]*(})\s*";
         var array_of_values = "((?:"+value+"[ \t]*)+)";
 
@@ -57,31 +57,32 @@ define(["eu/save"], function(Save) {
             return matchs_found[0];
         }
 
-        var save_data = new Save(), current_sections = [], items = [];
+        var save_data = new Save(), current_section = [], items = [];
         for(var i=0; i < res.length; i++) {
             var s = res[i], st = s.trim();
 
             var fcts = {
-                display_key_value: function (current_sections, key, value) {
-                    var begin = current_sections.length?current_sections.join(".")+".":"";
+                display_key_value: function (current_section, key, value) {
+                    var begin = current_section.length?current_section.join(".")+".":"";
                     console.log(begin + key + " = " + value);
+                    save_data.add_element(current_section, key, value);
                 },
                 key_value: function (key, value) {
-                    fcts['display_key_value'](current_sections, key, value);
+                    fcts['display_key_value'](current_section, key, value);
                 },
                 section_begin: function (section_name) {
-                    current_sections.push(section_name); items = [];
+                    current_section.push(section_name); items = [];
                 },
                 section_end: function () {
                     if(items.length > 0) {
                         fcts['display_key_value'](
-                            current_sections.slice(0, -1),
-                            current_sections.slice(-1),
+                            current_section.slice(0, -1),
+                            current_section.slice(-1),
                             items.join(","));
                         // Clear list
                         for(var i=0; i<items.length; i++) items.pop();
                     }
-                    current_sections.pop();
+                    current_section.pop();
                 },
                 array_of_values: function () { items.push(st); }
             };
