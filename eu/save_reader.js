@@ -9,107 +9,141 @@ define(["eu/save", "eu/section"], function(Save, Section) {
             if(err) {
                 handler(err);
             } else {
-                handler(null, from_string(data));
+                handler(null, from_string2(data.toString()));
             }
         });
     }
 
     // Extract an EU save string
     function from_string(data) {
-        var data = data.toString();
-
-        var save_type = data.match(/\w+\n/);
-        data = data.slice(data.indexOf('\n'));
-
-        var key_char = "[\\w\\.-]" // "[^\\s={]" // 
-          , key = key_char+"+"
-          , value = '(?:' + '"[^"]+"' + '|' + key + ')'
-          , key_value = "(\\s*"+key+")=("+value+")"
-          , section_begin = "("+key+")\\s*=\\s*\\{"
-          , section_end = "}"
-          , array_of_values = "((?:"+value+"\\s*)+)";
-
+        var key = "[\\w\\.-]+"
+          , value = '(?:' + '"[^"]*"' + '|' + key + ')';
         var regex = new RegExp("(?:"
-            +key_value
+            +value
             +"|"
-            +section_begin
+            +"\\{"
             +"|"
-            +section_end
+            +"}"
             +"|"
-            +array_of_values
+            +"="
             +")"
-        , "g");
+        , "g"), res_g = data.match(regex), length = res_g.length;
 
-        var res = data.match(regex);
+        var stack = [], last_section_name = "", current_section = new Section()
+          , debug=false, no_stack = false, depth_indent = "", save_type = "";
 
-        function type(s) {
-            // Matchs order by priority
-            var matchs = {
-                key_value: key_value,
-                section_begin: section_begin,
-                section_end: section_end,
-                array_of_values: array_of_values
-            }, matchs_found = [];
-
-            Object.keys(matchs).forEach(function (regex_name) {
-                var res = s.match(matchs[regex_name]);
-                if(res !== null) {
-                    // Store match name + match result
-                    matchs_found.push([regex_name, res.slice(1)]);
-                }
-            });
-
-            return matchs_found[0];
+        function trim_value(s) {
+            // Trim and delete first/last " characters
+            return s.trim().replace(/^"|"$/g, "");
         }
 
-        var current_section = new Section(), debug=false, depth_indent = "", items = [];
-        var fcts = {
-            key_value: function (key, value) {
-                key = key.trim();
-                value = value.trim();
+        for(var i=0; i < length; i++) {
+            var res = trim_value(res_g[i]);
 
-                if(debug) console.log(depth_indent+'<item name="'+key+'" value="'+value.replace(/^"|"$/g, "")+'" />');
-                current_section.add_element(key, value.replace(/^"|"$/g, ""));
-            },
-            section_begin: function (section_name) {
-                section_name = section_name.trim();
+            if(res == "{") {
+                //console.log("{ found");
+                var unnamed = false;
 
-                if(debug) console.log(depth_indent+'<section name="'+section_name+'">');
-                depth_indent += "    ";
-                current_section = new Section(section_name, current_section);
-            },
-            section_end: function () {
-                depth_indent = depth_indent.slice(0, -4);
-                if(debug) console.log(depth_indent+"</section>");
-                
-                if(items.length > 0) {
-                    // Current section is not a section but list
-                    current_section.parent.add_element(current_section.name, items);
-                    // Clear list
-                    items = [];
+                if(stack.length < 2) {
+                    throw "{ found but stack.length = "+stack.length;
+                }
+
+                var last_elt  = stack.pop();
+                if(last_elt == "=") {
+                    var token = stack.pop();
+                    if(token == '=' || token == '{' || token == '}') {
+                        throw token + " found after = { when expected "+last_key;
+                    }
+
+                    last_section_name = token;
+                    current_section = new Section(last_section_name, current_section);
                 } else {
+                    stack.push(last_elt);
+                    if(last_section_name == "") {
+                        throw "Unnamed section found and no names available. Last token: "+last_elt;
+                    }
+                    unnamed = true;
+                    //console.log("Unnamed section found, take last section name as name: "+last_section_name);
+
+                    current_section = new Section(last_section_name, current_section);
+                }
+
+                if(debug) console.log(depth_indent+'<section name="'+last_section_name+
+                    '" unnamed="'+unnamed.toString()+'">');
+                depth_indent += "    ";
+            } else if(res == "}") {
+                //console.log("} found");
+                no_stack = true;
+
+                var token, values = [];
+                while((token = stack.pop()) != "{") {
+                    values.unshift(token);
+                }
+                // 'section_name' and '=' also removed in "{" part
+
+                if(!values.length) {
+                    //console.log("End of section "+current_section.name);
                     // Add current section in parent's elements
                     current_section.parent.add_element(current_section.name, current_section);
+                } else {
+                    if(current_section.elements_order.length) {
+                        throw "Array found but elements also found: "+
+                            Object.keys(current_section.elements)+". Array: "+
+                            values.join(",");
+                    }
+                    if(debug) console.log(depth_indent+'<array value="\''+values.join("' '")+'\'" />')
+                    values = values.filter(function(elt) {
+                        // Remove empty elements
+                        return elt !== "";
+                    })
+
+                    // Current section is not a section but a list
+                    current_section.parent.add_element(current_section.name, values);
+                    // Clear list
+                    values = [];
                 }
+
+                depth_indent = depth_indent.slice(0, -4);
+                if(debug) console.log(depth_indent+'</section>');
                 current_section = current_section.parent;
-            },
-            array_of_values: function (values) {
-                values = values.replace(/\s+/g, ' ').split(' ').filter(function(element) {
-                    return element !== "";
-                })
+            } else if(res == "=") {
+                //console.log("= found");
+            } else {
+                //console.log("Value found: "+res);
+                if(i == 0) {
+                    // Save type found
+                    save_type = res;
+                    if(debug) console.log("<"+save_type+">");
+                }
 
-                if(debug) console.log(depth_indent+'<array value="'+values.join(" ")+'" />');
+                var token = stack.pop();
+                if(token != "=") {
+                    stack.push(token);
+                    // Store an element or a key
+                } else {
+                    // key = value found
+                    token = stack.pop();
+                    if(token == '=' || token == '{' || token == '}') {
+                        throw token + " found after = value when expected a key";
+                    }
 
-                items = values;
+                    var key = token
+                      , value = res;
+
+                    if(debug) console.log(depth_indent+'<item name="'+key+'" value="'+value+'" />');
+                    current_section.add_element(key, value);
+                    no_stack = true;
+                }
             }
-        };
-        for(var i=0; i < res.length; i++) {
-            var current_type = type(res[i]);
-            fcts[current_type[0]].apply(null, current_type[1]);
+
+            if(!no_stack) {
+                stack.push(res);
+            }
+            no_stack = false;
         }
-        // Fix missing section_end
-        while(current_section.parent !== undefined) {
-            fcts['section_end']();
+
+        if(save_type != "" && debug) {
+            console.log("</"+save_type+">");
         }
         return new Save(save_type, current_section);
     }
