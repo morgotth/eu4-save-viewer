@@ -9,7 +9,7 @@ define(["eu/save", "eu/section"], function(Save, Section) {
             if(err) {
                 handler(err);
             } else {
-                handler(null, from_string2(data.toString()));
+                handler(null, from_string(data.toString()));
             }
         });
     }

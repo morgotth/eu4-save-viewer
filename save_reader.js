@@ -2,15 +2,17 @@
 
 var requirejs = require('requirejs');
 
-// Hit from sebastianpatten.wordpress.com/2011/12/13/node-sharing-javascript-code-between-client-and-server/
 requirejs.config({
+    // Default root directory
+    baseUrl: 'js'
     //Pass the top-level main.js/index.js require
     //function to requirejs so that node modules
     //are loaded relative to the top-level JS file.
-    nodeRequire: require
+    //nodeRequire: require
 });
 
-requirejs(["eu/save_reader"], function main(save_reader) {
+// Hit from sebastianpatten.wordpress.com/2011/12/13/node-sharing-javascript-code-between-client-and-server/
+requirejs(["eu/save_reader"], function(save_reader) {
     if(process.argv.length > 2) {
         save_reader.from_local_file(process.argv[2], function(err, save) {
             if(err) {

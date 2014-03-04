@@ -1,6 +1,6 @@
 require.config({
     // Default root directory
-    baseUrl: '.',
+    baseUrl: 'js',
     // Bypass baseUrl for each module that begin with following paths
     paths: {
         jquery: 'libs/jquery-2.1.0'
@@ -9,6 +9,11 @@ require.config({
 
 require(["eu/save_reader", "ui/drop_down_list"],
         function(save_reader, drop_down_list) {
+
+    /*
+     * Browser side
+     */
+
     // From http://www.html5rocks.com/en/tutorials/file/dndfiles/#toc-selecting-files-input
     function save_selector_handler(evt) {
         var save_filepath = evt.target.files[0];
@@ -18,7 +23,7 @@ require(["eu/save_reader", "ui/drop_down_list"],
             return function(e) {
                 console.log('Read '+file.name);
                 var save = save_reader.from_string(e.target.result);
-                document.getElementById('save_output').innerHTML = save.to_html();
+                document.getElementById('save_output').innerHTML = save.to_json();
             }
         })(save_filepath);
         reader.readAsText(save_filepath);
@@ -34,6 +39,13 @@ require(["eu/save_reader", "ui/drop_down_list"],
             'change', save_selector_handler, false);
     }
 
-    drop_down_list();
-    main_save_reader();
+    function browser_main() {
+        drop_down_list();
+        main_save_reader();
+    }
+
+    if(require.isBrowser) {
+        console.log("Browser detected");
+        browser_main();
+    }
 });
