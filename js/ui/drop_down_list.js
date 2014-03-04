@@ -10,7 +10,9 @@ define(["jquery"], function($) {
 
     function drop_down_list(root_element) {
         console.log("Enable drop down list behavior");
-        $(".drop-down-list-root ul", root_element).prev().addClass("drop-down-list");
+        var parent = (root_element || '.drop-down-list-root');
+
+        $(parent+" ul", root_element).prev().addClass("drop-down-list");
 
         $(".drop-down-list", root_element).each(function() {
             $(this).on("click", click_handler).next("ul").each(function() {

@@ -23,7 +23,9 @@ require(["eu/save_reader", "ui/drop_down_list"],
             return function(e) {
                 console.log('Read '+file.name);
                 var save = save_reader.from_string(e.target.result);
-                document.getElementById('save_output').innerHTML = save.to_json();
+                console.log('Write save');
+                document.getElementById('save-output').innerHTML = save.to_html();
+                drop_down_list();//'#save-output');
             }
         })(save_filepath);
         reader.readAsText(save_filepath);

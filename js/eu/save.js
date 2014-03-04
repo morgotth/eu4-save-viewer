@@ -33,5 +33,70 @@ define(["eu/section"], function(Section) {
         return o;
     };
 
+    Save.prototype.to_html = function to_html(section) {
+        function is_section_array(array) {
+            return array.every(function(elt){ elt.constructor == Section; });
+        }
+        function elt_to_html(key, value) {
+            var s = '<li>';
+            if (value.constructor == Array) {
+                s += '<span class="eu-list-key">' + key + '</span>: <ul>';
+                for (var i = 0, last_elt = null, cpt = 0; i < value.length; i++) {
+                    var elt = value[i];
+
+                    if(elt.constructor == Section) {
+                        if(last_elt != null) {
+                            s += '<li class="eu-array-elt">' + last_elt +
+                                (cpt>1?' ('+cpt+' times)':'') +
+                                '</li>';
+                            cpt = 0;
+                            last_elt = null;
+                        }
+                        s += elt_to_html(key, elt);
+                    } else {
+                        if(last_elt == null) {
+                            cpt = 0;
+                            last_elt = elt;
+                        }
+                        else if(last_elt != elt) {
+                            s += '<li class="eu-array-elt">' + last_elt + 
+                                (cpt>1?' ('+cpt+' times)':'') +'</li>';
+                            cpt = 0;
+                            last_elt = elt;
+                        } else {
+                            cpt += 1;
+                        }
+                    }
+                }
+                if(last_elt != null) {
+                    // Issue when last element != Section
+                    s += '<li class="eu-array-elt">' + last_elt +
+                        (cpt>1?' ('+cpt+' times)':'') +
+                        '</li>';
+                }
+                s += '</ul>';
+            } else if(value.constructor == Section) {
+                s += '\n' + to_html(value);
+            } else {
+                s += '<span class="eu-section-key">' + key + '</span>: ' + value;
+            }
+            return s + '</li>\n';
+        }
+
+        var name = (section || {name: "Sauvegarde "+this.save_type}).name;
+        var section = section || this.root;
+
+        var s = '<p>' + name + ':</p> <ul>\n';
+        if(!section.elements_order.length) {
+            s += '<li><strong>/!\\</strong> Empty section</li>\n';
+        }
+        for(var i in section.elements_order) {
+            var key = section.elements_order[i], value = section.elements[key];
+            s += elt_to_html(key, value);
+        }
+
+        return s + '</ul>\n'; 
+    };
+
     return Save;
 });
