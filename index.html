@@ -5,60 +5,48 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>EU4 save viewer</title>
 	<style type="text/css">
-		.hidden {
+		.drop-down-list {
+			cursor: pointer;
+		}
+
+		.drop-down-list-hidden {
 			display: none;
 		}
-
-		.visible {
-			display: block;
-		}
 	</style>
-	<script data-main="main" src="node_modules/requirejs//require.js"></script>
-	<script>
-		function showmenu(menu) {
-			if (menu.className == 'hidden') menu.className = 'visible';
-			else menu.className = 'hidden';
-		}
-	</script>
+
+	<script src="/libs/jquery-2.1.0.js" charset="utf-8" async defer></script>
+	<script data-main="main" src="node_modules/requirejs/require.js" async defer></script>
 </head>
 <body>
-	<p>JSON url: <input type="file" id="save_filename" name="save_filename"></p>
+	<p>JSON url: <input type="file" id="eu_save_selector" name="eu_save_selector"></p>
 
-	<div id="save_output">
+	<!-- http://www.coinduwebmaster.com/sous-menus-caches/60/ -->
+	<div id="save_output" class="drop-down-list-root">
+		<a>Sauvegarde Europa universalis:</a>
 		<ul>
-		<li>
-			<a style="cursor: pointer;" 
-				onclick="javascript: showmenu(document.getElementById('sousmenu1'));"
-				>Menu Principal</a>
-		 
-			<ul id="sousmenu1" class="hidden">
 			<li>
-				<a style="cursor: pointer;" 
-				onclick="javascript: showmenu(document.getElementById('sousmenu3'));"
-				>Menu Principal</a>
-			 
-				<ul id="sousmenu3" class="hidden">
+				<a>Menu Principal</a>
+				<ul id="test1">
+					<li>
+						<a>Menu Principal</a>
+						<ul>
+							<li><a href="sous-menu2.html">Sous Menu #2</a></li>
+							<li><a href="sous-menu3.html">Sous Menu #3</a></li>
+						</ul>
+					</li>
 					<li><a href="sous-menu2.html">Sous Menu #2</a></li>
 					<li><a href="sous-menu3.html">Sous Menu #3</a></li>
 				</ul>
 			</li>
-			<li><a href="sous-menu2.html">Sous Menu #2</a></li>
-			<li><a href="sous-menu3.html">Sous Menu #3</a></li>
-			</ul>
-		 
-		</li>
-		<li>
-			<a style="cursor: pointer;" 
-				onclick="javascript: showmenu(document.getElementById('sousmenu2'));"
-				>Menu Principal</a>
-		 
-			<ul id="sousmenu2" class="hidden">
-			<li><a href="sous-menu1.html">Sous Menu #1</a></li>
-			<li><a href="sous-menu2.html">Sous Menu #2</a></li>
-			<li><a href="sous-menu3.html">Sous Menu #3</a></li>
-			</ul>
-		 
-		</li>
+			<li>
+				<a>Menu Principal</a>
+				<ul id="test2">
+					<li><a href="sous-menu1.html">Sous Menu #1</a></li>
+					<li><a href="sous-menu2.html">Sous Menu #2</a></li>
+					<li><a href="sous-menu3.html">Sous Menu #3</a></li>
+				</ul>
+			 
+			</li>
 		</ul>
 	</div>
 </body>

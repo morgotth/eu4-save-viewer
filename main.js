@@ -1,6 +1,16 @@
-require(["eu/save_reader"], function(save_reader) {
+require.config({
+    // Default root directory
+    baseUrl: '.',
+    // Bypass baseUrl for each module that begin with following paths
+    paths: {
+        jquery: 'libs/jquery-2.1.0'
+    }
+});
+
+require(["eu/save_reader", "ui/drop_down_list"],
+        function(save_reader, drop_down_list) {
     // From http://www.html5rocks.com/en/tutorials/file/dndfiles/#toc-selecting-files-input
-    function file_select_handler(evt) {
+    function save_selector_handler(evt) {
         var save_filepath = evt.target.files[0];
 
         var reader = new FileReader();
@@ -14,12 +24,16 @@ require(["eu/save_reader"], function(save_reader) {
         reader.readAsText(save_filepath);
     }
 
-    // Check for the various File API support.
-    if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
-      alert('The File APIs are not fully supported in this browser.');
-      return;
+    function main_save_reader() {
+        // Check for the various File API support.
+        if (!window.File || !window.FileReader || !window.FileList || !window.Blob) {
+          alert('The File APIs are not fully supported in this browser.');
+          return;
+        }
+        document.getElementById('eu_save_selector').addEventListener(
+            'change', save_selector_handler, false);
     }
 
-    console.log("browser detected");
-    document.getElementById('save_filename').addEventListener('change', file_select_handler, false);
+    drop_down_list();
+    main_save_reader();
 });
