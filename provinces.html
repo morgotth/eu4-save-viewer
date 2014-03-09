@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Provinces viewer</title>
+	<style type="text/css" media="screen">
+		div {
+			border: 1px solid black;
+			background-color: red;
+			width: 5%;
+			height: 30px;
+		}
+		canvas {
+			border: 1px solid black;
+			width: 95%;
+		}
+
+		#provinces {
+			float: left;
+		}
+
+		#copy {
+			float: right;
+		}
+
+		.fclear {
+			float: none;
+		}
+	</style>
+	<script src="./js/libs/jquery-2.1.0.js" type="text/javascript" charset="utf-8" async defer></script>
+	<script type="text/javascript" charset="utf-8">
+	function bind(self, func) {
+		return function() {
+			return func.apply(self, arguments)
+		}
+	}
+
+	function log(msg) {
+		console.log(msg);
+	}
+
+	function rgb2hex(red, blue, green) {
+		return '#'+[red, blue, green].map(function(rgb) {
+			return ("0"+parseInt(rgb,10).toString(16)).slice(-2);
+		}).join('').toUpperCase();
+	}
+
+	function canvas_selected(evt) {
+		log(evt);
+		var can = $(evt.target);
+		var ctx = can[0].getContext('2d');
+		var offset = can.offset(),
+			x = Math.floor((evt.pageX - offset.left)*can[0].width/can.outerWidth()),
+			y = Math.floor((evt.pageY - offset.top)*can[0].height/can.outerHeight());
+		var imageData = ctx.getImageData(x, y, 1, 1),
+			pixels = imageData.data;
+		log("Page: "+evt.pageX+"/"+evt.pageY+". "+
+			"Offset: "+offset.left+" "+offset.top+". Click at "+x+"/"+y+
+			". Canvas w/h: "+can[0].width+"/"+can[0].height+
+			", data w/h: "+(imageData.width)+"/"+(imageData.height));
+		var idx = 0//((y - 1) * (imageData.width * 4)) + ((x - 1) * 4);
+		var r = pixels[idx],
+			g = pixels[idx+1],
+			b = pixels[idx+2];
+		log("red: "+r+" "+
+			"green: "+g+" "+
+			"blue: "+b);
+
+		var color = rgb2hex(r, g, b);
+		log("apply "+ color);
+		$("#color").css({"background-color": color});
+	}
+
+	function copy_provinces() {
+		var provinces = $("#provinces")[0],
+			copy = $("#copy")[0];
+
+		var pctx = provinces.getContext('2d'),
+			cctx = copy.getContext('2d');
+
+		var data = pctx.getImageData(0, 0, copy.width, copy.height).data;
+		var imgd = cctx.createImageData(copy.width, copy.height);
+		var length = data.length/4;
+		log("copy_provinces with "+provinces.width+" "+provinces.height+" and length: "+length+
+			" from provinces: "+data.length/4);
+		for(var i = 0; i < data.length; i+=4) {
+			imgd.data[i]   = data[i];
+			imgd.data[i+1] = data[i+1];
+			imgd.data[i+2] = data[i+2];
+			// alpha (0: hidden)
+			imgd.data[i+3] = data[i+3];
+		}
+		console.log(imgd);
+		cctx.putImageData(imgd, 0, 0);
+	}
+
+	function EuMap(canvas_id, uri) {
+		this.canvas_id = canvas_id;
+		this.canvas = $('#'+canvas_id)[0];
+		this.ctx = this.canvas.getContext('2d');
+		this.img = new Image();
+
+		var self = this;
+		this.add_event('load', this.image_loaded, this.img);
+		this.img.src = uri;
+
+		this.x = 0;
+		this.y = 0;
+		this.scale = [4, 4];
+
+		this.click = false;
+	};
+
+	EuMap.prototype.add_event = function(event_name, listener, element) {
+		var self = this;
+		element = element || this.canvas;
+		element.addEventListener(event_name, function() {
+			listener.apply(self, arguments)
+		}, false);
+	}
+
+	EuMap.prototype.image_loaded = function() {
+		console.log('image_loaded');
+
+		// Update canvas width / height with image attributes
+		this.canvas.width = 1200;
+		this.canvas.height = 1200 * this.img.height / this.img.width;
+
+		log(this.img);
+		this.draw();
+
+		// Mouse click
+		this.add_event('mousedown', this.mouse_down);
+		this.add_event('mouseup', this.mouse_up);
+		this.add_event('mousemove', this.mouse_move);
+
+		// Add 4 black points
+		var data = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+		var length = data.data.length/4;
+		for(var i=1; i<4; i++) {
+			var idx = (length*i);
+			log('Write black at '+idx+", so w/h: "+(idx/this.canvas.width)+"/"+(idx%this.canvas.width))
+			data.data[idx+0] = 0;
+			data.data[idx+1] = 0;
+			data.data[idx+2] = 0;
+		}
+		this.ctx.putImageData(data, 0, 0);
+	};
+
+	EuMap.prototype.draw = function() {
+		this.ctx.scale(this.scale[0], this.scale[1]);
+		this.ctx.drawImage(this.img, this.x, this.y);
+	};
+
+	EuMap.prototype.mouse_up = function(e) {
+		log('up');
+		this.click = false;
+		log(e);
+	};
+
+	EuMap.prototype.mouse_down = function(e) {
+		log('down');
+		this.click = true;
+		log(e);
+	};
+
+	EuMap.prototype.mouse_move = function(e) {
+		if(this.click) {
+			log('move');
+			log(e);
+		}
+	};
+
+	window.onload = function() {
+		// w/h = 5632 2048 = 2.75 ratio
+		document.map = new EuMap('provinces', './imgs/provinces.bmp');
+	};
+	</script>
+</head>
+<body>
+	<div id="color"></div>
+	<canvas id="provinces">
+	</canvas>
+</body>
+</html>
