@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>EU4 save viewer</title>
+	<style type="text/css">
+		.drop-down-list {
+			cursor: pointer;
+		}
+
+		.drop-down-list-hidden {
+			display: none;
+		}
+	</style>
+
+	<script data-main="js/raw_main" src="node_modules/requirejs/require.js" async defer></script>
+</head>
+<body>
+	<p>JSON url: <input type="file" id="eu_save_selector" name="eu_save_selector"></p>
+
+	<!-- http://www.coinduwebmaster.com/sous-menus-caches/60/ -->
+	<div id="save-output" class="drop-down-list-root">
+		<a>Sauvegarde Europa universalis:</a>
+		<ul>
+			<li>
+				<a>Menu Principal</a>
+				<ul id="test1">
+					<li>
+						<a>Menu Principal</a>
+						<ul>
+							<li><a href="sous-menu2.html">Sous Menu #2</a></li>
+							<li><a href="sous-menu3.html">Sous Menu #3</a></li>
+						</ul>
+					</li>
+					<li><a href="sous-menu2.html">Sous Menu #2</a></li>
+					<li><a href="sous-menu3.html">Sous Menu #3</a></li>
+				</ul>
+			</li>
+			<li>
+				<a>Menu Principal</a>
+				<ul id="test2">
+					<li><a href="sous-menu1.html">Sous Menu #1</a></li>
+					<li><a href="sous-menu2.html">Sous Menu #2</a></li>
+					<li><a href="sous-menu3.html">Sous Menu #3</a></li>
+				</ul>
+			 
+			</li>
+		</ul>
+	</div>
+</body>
+</html>

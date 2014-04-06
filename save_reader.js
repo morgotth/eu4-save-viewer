@@ -12,13 +12,25 @@ requirejs.config({
 });
 
 // Hit from sebastianpatten.wordpress.com/2011/12/13/node-sharing-javascript-code-between-client-and-server/
-requirejs(["eu/save_reader"], function(save_reader) {
+requirejs(["eu/save_reader", "eu/load_game"], function(save_reader, load_game) {
     if(process.argv.length > 2) {
         save_reader.from_local_file(process.argv[2], function(err, save) {
             if(err) {
                 console.log("Error: " + err);
             } else {
-                console.log(JSON.stringify(save.to_json()));
+                var game = load_game(save);
+                var cache = [];
+                console.log(JSON.stringify(game));/*, function(key, value) {
+                    if (typeof value === 'object' && value !== null) {
+                        if (cache.indexOf(value) !== -1) {
+                            // Circular reference found, discard key
+                            return "CIRCULAR";
+                        }
+                        // Store value in our collection
+                        cache.push(value);
+                    }
+                    return value;
+                }));*/
             }
         });
     } else {

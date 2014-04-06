@@ -7,8 +7,55 @@ require.config({
     }
 });
 
-require(["eu/save_reader", "ui/drop_down_list"],
-        function(save_reader, drop_down_list) {
+require(["eu/save_reader", "ui/drop_down_list", "eu/load_game"],
+        function(save_reader, drop_down_list, load_game) {
+
+    function ul(elt) {
+        return "<ul>"+elt+"</ul>";
+    }
+    function li(elt) {
+        return "<li>"+elt+"</li>";
+    }
+    function section_key(elt, key) {
+        return '<span class="eu-section-key">' + key + '</span>: ' + elt[key];
+    }
+    function array_elt(elt, key) {
+        return '<li class="eu-array-elt">' + key + '</li>: ' + elt[key]
+    }
+    function list_key(elt, key) {
+        var s = "";
+
+        for (var size = elt[key].length, i = 0; i < size; i++) {
+            var e = elt[key][i];
+            s += li(e);
+        };
+
+        return '<span class="eu-list-key">' + key + '</span>:' + ul(s);
+    }
+    function complex_html(e, key) {
+        var elt = e[key];
+        for (var size = elt[key].length, i = 0; i < size; i++) {
+            var e = elt[key][i];
+            s += li(e);
+        };
+        return '<span class="eu-list-key">' + key + '</span>:' + ul(s);
+    }
+
+    function to_html(game) {
+        var s = "";
+
+        s += li(section_key(game, "start_date"));
+        s += li(section_key(game, "date"));
+        s += li(section_key(game, "player"));
+        s += li(list_key(game, "players"));
+
+        s += li(complex_html(game, "religions"))
+        s += li(complex_html(game, "provinces"))
+        s += li(complex_html(game, "countries"))
+        s += li(complex_html(game, "wars"))
+
+        return '<p>Game:</p>\n' + ul(s) + '</ul>\n'; 
+    };
 
     /*
      * Browser side
@@ -23,8 +70,11 @@ require(["eu/save_reader", "ui/drop_down_list"],
             return function(e) {
                 console.log('Read '+file.name);
                 var save = save_reader.from_string(e.target.result);
-                console.log('Write save');
-                document.getElementById('save-output').innerHTML = save.to_html();
+
+                console.log('Write save '+save);
+                document.game = load_game(save);
+                document.getElementById('save-output').innerHTML = to_html(document.game);
+
                 drop_down_list();//'#save-output');
             }
         })(save_filepath);
