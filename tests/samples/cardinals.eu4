@@ -1,0 +1,392 @@
+EU4txt
+date="1580.1.1"
+player="TUR"
+papacy=
+{
+	papal_state="PAP"
+	controller="POR"
+	crusade_target="TUR"
+	crusade_start="1577.1.7"
+	last_excom="1463.11.7"
+	papacy_active=yes
+	weighted_cardinal=2
+	reform_desire=1.325
+	active_cardinals={
+		cardinal=
+	{
+
+		name="de Champmartin"
+		cardinal_age=79
+		location=194
+		controller="VEN"
+		votes=
+		{
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 50 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 35 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 15 0 0 0 0 0 0 0 0 0 0 0 0 0 0 70 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 15 0 0 0 0 0 0 10 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 		}
+		id=
+		{
+			id=59
+			type=32
+		}
+	}
+
+	cardinal=
+	{
+		name="Pizarro"
+		cardinal_age=76
+		location=489
+		controller="GBR"
+		votes=
+		{
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 110 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 55 0 0 0 55 0 0 0 0 0 0 55 0 0 0 0 35 0 0 0 0 0 110 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 55 50 50 40 68 60 45 70 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 		}
+		id=
+		{
+			id=60
+			type=32
+		}
+	}
+
+	cardinal=
+	{
+		name="Carleton"
+		cardinal_age=71
+		location=248
+		controller="POR"
+		votes=
+		{
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 45 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 80 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 130 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 5 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 		}
+		id=
+		{
+			id=65
+			type=32
+		}
+	}
+}
+}
+active_war=
+{
+	name="Conquête ming de Ordos"
+	history=
+	{
+		1576.11.4=
+		{
+			add_attacker="MNG"
+		}
+		1576.11.4=
+		{
+			add_defender="OIR"
+		}
+		1576.11.5=
+		{
+			add_defender="SST"
+		}
+		1576.11.5=
+		{
+			add_defender="TIB"
+		}
+		1577.5.17=
+		{
+			battle=
+			{
+				name="Ulanqab"
+				location=702
+				result=yes
+				attacker=
+				{
+					cavalry=12000
+					artillery=4000
+					infantry=26000
+					losses=21794
+					country="MNG"
+					war_goal=0
+					commander="Youyi He"
+				}
+				defender=
+				{
+					cavalry=5000
+					artillery=1000
+					infantry=11000
+					losses=6162
+					country="OIR"
+					war_goal=0
+					commander="Lha-bzang Batmunkh"
+				}
+			}
+		}
+		1577.8.25=
+		{
+			battle=
+			{
+				name="Dorno Govi"
+				location=720
+				result=yes
+				attacker=
+				{
+					cavalry=4314
+					artillery=2000
+					infantry=9903
+					losses=934
+					country="MNG"
+					war_goal=0
+					commander=""
+				}
+				defender=
+				{
+					artillery=1000
+					infantry=1000
+					losses=2848
+					country="OIR"
+					war_goal=0
+					commander=""
+				}
+			}
+		}
+		1577.12.28=
+		{
+			battle=
+			{
+				name="Dornod"
+				location=721
+				result=no
+				attacker=
+				{
+					cavalry=3000
+					artillery=1000
+					infantry=6000
+					losses=7856
+					country="MNG"
+					war_goal=0
+					commander=""
+				}
+				defender=
+				{
+					cavalry=3601
+					artillery=1000
+					infantry=8745
+					losses=2123
+					country="OIR"
+					war_goal=0
+					commander="Lha-bzang Batmunkh"
+				}
+			}
+		}
+		1578.4.1=
+		{
+			battle=
+			{
+				name="Xilin Gol"
+				location=723
+				result=yes
+				attacker=
+				{
+					cavalry=11274
+					artillery=3966
+					infantry=23947
+					losses=5467
+					country="MNG"
+					war_goal=0
+					commander="Zaihou Chen"
+				}
+				defender=
+				{
+					cavalry=3516
+					artillery=1000
+					infantry=7972
+					losses=4993
+					country="OIR"
+					war_goal=0
+					commander="Lha-bzang Batmunkh"
+				}
+			}
+		}
+		1578.9.13=
+		{
+			battle=
+			{
+				name="Tannu Tuva"
+				location=716
+				result=yes
+				attacker=
+				{
+					cavalry=6000
+					artillery=2000
+					infantry=12964
+					losses=3592
+					country="MNG"
+					war_goal=0
+					commander="Youyi He"
+				}
+				defender=
+				{
+					cavalry=1590
+					artillery=1000
+					infantry=4725
+					losses=2986
+					country="OIR"
+					war_goal=0
+					commander="Lha-bzang Batmunkh"
+				}
+			}
+		}
+		1579.4.15=
+		{
+			battle=
+			{
+				name="Kuruk Tagh"
+				location=713
+				result=yes
+				attacker=
+				{
+					cavalry=6000
+					artillery=2000
+					infantry=11885
+					losses=3339
+					country="MNG"
+					war_goal=0
+					commander="Youlun Ma"
+				}
+				defender=
+				{
+					cavalry=827
+					artillery=1000
+					infantry=5046
+					losses=2787
+					country="OIR"
+					war_goal=0
+					commander="Lha-bzang Batmunkh"
+				}
+			}
+		}
+		1579.6.20=
+		{
+			battle=
+			{
+				name="Ouighouristan"
+				location=712
+				result=yes
+				attacker=
+				{
+					cavalry=6000
+					artillery=2000
+					infantry=9676
+					losses=888
+					country="MNG"
+					war_goal=0
+					commander="Youlun Ma"
+				}
+				defender=
+				{
+					cavalry=482
+					artillery=980
+					infantry=3024
+					losses=7739
+					country="OIR"
+					war_goal=0
+					commander="Lha-bzang Batmunkh"
+				}
+			}
+		}
+		1579.11.14=
+		{
+			battle=
+			{
+				name="Kuruk Tagh"
+				location=713
+				result=yes
+				attacker=
+				{
+					cavalry=6000
+					artillery=2000
+					infantry=13000
+					losses=0
+					country="MNG"
+					war_goal=0
+					commander="Zaihou Chen"
+				}
+				defender=
+				{
+					infantry=1000
+					losses=2000
+					country="OIR"
+					war_goal=0
+					commander="Lha-bzang Batmunkh"
+				}
+			}
+		}
+	}
+	attacker="MNG"
+	defender="OIR"
+	defender="SST"
+	defender="TIB"
+	original_attacker="MNG"
+	original_defender="OIR"
+	action="1579.11.14"
+	attacker_score=8.400
+	take_province=
+	{
+		type="take_claim"
+		province=701
+		casus_belli="cb_conquest"
+	}
+
+	{
+	}
+	demand=
+	{
+		terms=
+		{
+
+			{
+				from="MNG"
+				to="OIR"
+				terms=
+				{
+					demand=yes
+					annex=no
+					better=no
+					religion=no
+					government=no
+					union=no
+					concede=no
+					revoke_reform=no
+					revoke_elector=no
+					trade_power=no
+					humiliate=no
+					independence=no
+					treasury=0
+					province=723
+					province=701
+					province=702
+					province=709
+				}
+			}
+
+			{
+				from="MNG"
+				to="TIB"
+				terms=
+				{
+					demand=yes
+					annex=no
+					better=no
+					religion=no
+					government=no
+					union=no
+					concede=no
+					revoke_reform=no
+					revoke_elector=no
+					trade_power=no
+					humiliate=no
+					independence=no
+					treasury=0
+				}
+			}
+		}
+	}
+	war_direction_quarter=3
+	war_direction_year=23
+	last_warscore_quarter=46
+	last_warscore_year=46
+	next_quarter_update="1580.2.17"
+	next_year_update="1580.11.8"
+	stalled_years=0
+}

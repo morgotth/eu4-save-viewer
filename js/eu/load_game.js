@@ -2,8 +2,6 @@ define(["eu/model/api", "eu/utils"],
         function(model, utils) {
 
     var load_game = function load_game(save, handler) {
-        console.log("Load an "+save.save_type+" save");
-
         // Simple characteristics
         var start_date = save.root.elements["start_date"];
         var date = save.root.elements["date"];
@@ -52,28 +50,49 @@ define(["eu/model/api", "eu/utils"],
     var load_provinces = function load_provinces(provinces_section) {
         var parsers = {
             revolt: function(date, event_desc) {
-                return new model.HistoryEvent("revolt", event_desc.type);
+                return new model.HistoryEvent("revolt", event_desc.type || "");
+            },
+            advisor: function(date, event_desc) {
+                return new model.Advisor({
+                    name: primitive_expected(event_desc, "name"),
+                    type: primitive_expected(event_desc, "type"),
+                    skill: primitive_expected(event_desc, "skill"),
+                    location: primitive_expected(event_desc, "location"),
+                    date: leader_date(primitive_expected(event_desc, "date")),
+                    hire_date: leader_date(primitive_expected(event_desc, "hire_date")),
+                    death_date: leader_date(primitive_expected(event_desc, "death_date"))
+                });
             }
         }
         function load_province(province_s) {
             return {
-                name: primitive_expected(province_s.name),
-                owner: primitive_expected(province_s.owner),
-                controller: primitive_expected(province_s.controller),
-                core: list_expected(province_s.core),
-                trade: primitive_expected(province_s.trade),
-                culture: primitive_expected(province_s.culture),
-                religion: primitive_expected(province_s.religion),
-                capital: primitive_expected(province_s.capital),
-                is_city: primitive_expected(province_s.is_city),
-                base_tax: primitive_expected(province_s.base_tax),
-                hre: primitive_expected(province_s.hre)
+                name: primitive_expected(province_s, "name"),
+                culture: list_expected(province_s, "culture"),
+                religion: primitive_expected(province_s, "religion"),
+                capital: primitive_expected(province_s, "capital"),
+                trade_goods: primitive_expected(province_s, "trade_goods"),
+                hre: primitive_expected(province_s, "hre"),
+                base_tax: primitive_expected(province_s, "base_tax"),
+                manpower: primitive_expected(province_s, "manpower"),
+
+                // Discovered province only
+                is_city: province_s["is_city"] && primitive_expected(province_s, "is_city"),
+                owner: province_s["owner"] && primitive_expected(province_s, "owner"),
+                controller: province_s["controller"] && primitive_expected(province_s, "controller"),
+                trade: province_s["trade"] && primitive_expected(province_s, "trade"),
+                core: province_s["core"] && list_expected(province_s["core"]),
+
+                // Undiscovered province only
+                native_size: province_s["native_size"] && primitive_expected(province_s, "native_size"),
+                native_ferocity: province_s["native_ferocity"] && primitive_expected(province_s, "native_ferocity"),
+                native_hostileness: province_s["native_hostileness"] && primitive_expected(province_s, "native_hostileness")
             }
         }
         var single_events = [
             "controller","add_claim","remove_claim", "owner",
             "add_core","remove_core","hre","culture","religion", "base_tax",
-            "revolt_risk"
+            "revolt_risk", "capital", "manpower", "name", "trade_goods",
+            "citysize", "colonysize", "native_ferocity", "native_hostileness", "native_size"
         ];
         var useless_events = ["discovered_by"];
 
@@ -81,9 +100,11 @@ define(["eu/model/api", "eu/utils"],
             var event_history = null;
 
             if(event_desc === "yes") {
-                event_history = new model.HistoryEvent("building", event_name)
+                event_history = new model.HistoryEvent("building", event_name);
             } else if(utils.contains(event_name, single_events)) {
-                event_history = new model.HistoryEvent(event_name, event_desc);
+                event_history = new model.HistoryEvent(
+                    event_name,
+                    primitive_expected(event_desc));
             } else if(!utils.contains(event_name, useless_events)) {
                 console.log("Unexpected province event "+event_name+": "+event_desc);
             }
@@ -93,8 +114,12 @@ define(["eu/model/api", "eu/utils"],
 
         var provinces = {};
         for(var raw_province_id in provinces_section.elements) {
-            var province_id = Math.abs(parseInt(raw_province_id, 10));
             var history_section = provinces_section.elements[raw_province_id].elements["history"];
+            if(!history_section) {
+                console.log("Ignore invalid province "+raw_province_id);
+                continue;
+            }
+            var province_id = Math.abs(parseInt(raw_province_id, 10));
 
             var current = load_province(provinces_section.elements[raw_province_id].elements);
             var original = load_province(history_section.elements);
@@ -107,9 +132,111 @@ define(["eu/model/api", "eu/utils"],
         return provinces;
     };
 
-    var load_countries = function load_countries(countries) {
-        // TODO
-        return {};
+    var load_countries = function load_countries(countries_section) {
+        function load_man(type, section) {
+            if(section.elements) {
+                section = section.elements;
+            }
+
+            if(type == "leader") {
+                return new model.MilitaryLeader({
+                    name: primitive_expected(section, "name"),
+                    type: primitive_expected(section, "type"),
+                    activation: leader_date(primitive_expected(section, "activation")),
+                    death_date: leader_date(primitive_expected(section, "death_date")),
+                    // Skills section
+                    skills: {
+                        maneuver: primitive_expected(section, "manuever"), // LOL
+                        fire: primitive_expected(section, "fire"),
+                        shock: primitive_expected(section, "shock"),
+                        siege: primitive_expected(section, "siege")
+                    },
+                    elector: primitive_expected(section, "elector")
+                });
+            } else {
+                // Royal man
+                return new model.Leader({
+                    type: type,
+                    name: section["name"],
+                    dynasty: section["dynasty"] || null,
+                    birth_date: leader_date(section["birth_date"]),
+                    // Optionnal leader section
+                    leader: section["leader"]? load_man("leader", section["leader"].elements): null,
+                    // Skills section
+                    skills: {
+                        dip: section["DIP"],
+                        adm: section["ADM"],
+                        mil: section["MIL"]
+                    },
+                    // Heir only
+                    succeeded: section["succeeded"]? section.succeeded === "yes" : undefined,
+                    death_date: leader_date(section["death_date"]),
+                    monarch_name: section["monarch_name"],
+                    claim: section["claim"]
+                });
+            }
+        }
+        var parsers = {
+            monarch: function(date, event_desc) {
+                return load_man("monarch", event_desc);
+            },
+            heir: function(date, event_desc) {
+                return load_man("heir", event_desc);
+            },
+            leader: function(date, event_desc) {
+                return load_man("leader", event_desc);
+            }
+        }
+        function load_country_state(country_s) {
+            return {
+                government: primitive_expected(country_s, "government"),
+                mercantilism: primitive_expected(country_s, "mercantilism"),
+                primary_culture: primitive_expected(country_s, "primary_culture"),
+                religion: primitive_expected(country_s, "religion"),
+                accepted_culture: list_expected(country_s, "accepted_culture"),
+                technology_group: primitive_expected(country_s, "technology_group"),
+                capital: primitive_expected(country_s, "capital")
+            }
+        }
+        var single_events = [
+            "capital","add_accepted_culture","religion",
+            "monarch","heir","leader","decision",
+            "primary_culture","technology_group","unit_type",
+            // union = personnal union
+            "union", "government"
+        ];
+
+        var default_parser = function(date, event_name, event_desc) {
+            var event_history = null;
+
+            if(event_desc === "yes") {
+                event_history = new model.HistoryEvent("idea", event_name)
+            } else if(utils.contains(event_name, single_events)) {
+                event_history = new model.HistoryEvent(event_name, primitive_expected(event_desc));
+            } else {
+                console.log("Unexpected country event "+event_name+": "+event_desc);
+            }
+
+            return event_history;
+        }
+
+        var countries = {};
+        for(var country_abbr in countries_section.elements) {
+            var history_section = countries_section.elements[country_abbr].elements["history"];
+            if(!history_section) {
+                console.log("Ignore invalid country "+country_abbr);
+                continue;
+            }
+
+            var current = load_country_state(countries_section.elements[country_abbr].elements);
+            var original = load_country_state(history_section.elements);
+
+            var history = load_history(history_section, parsers, default_parser);
+
+            countries[country_abbr] = new model.Country(country_abbr, current, original, history);
+        }
+
+        return countries;
     };
 
     var load_wars = function load_wars(wars_l) {
@@ -146,23 +273,19 @@ define(["eu/model/api", "eu/utils"],
                 var e = elt.elements[key];
                 if(e.elements && "casus_belli" in e.elements && "type" in e.elements) {
                     casus_belli = {
-                        casus_belli: primitive_expected(e.elements["casus_belli"]),
-                        type: primitive_expected(e.elements["type"]),
-                        province: primitive_expected(e.elements["province"]),
-                        target: primitive_expected(e.elements["target"])
+                        casus_belli: primitive_expected(e.elements, "casus_belli"),
+                        type: primitive_expected(e.elements, "type"),
+                        province: primitive_expected(e.elements, "province"),
+                        target: primitive_expected(e.elements, "target")
                     }
                     break;
                 }
             }
 
-            if(casus_belli === null) {
-                throw "No casus belli found for war: "+elt.elements.name;
-            }
-
             var war = new model.War(
-                primitive_expected(elt.elements.name),
-                primitive_expected(elt.elements.original_attacker),
-                primitive_expected(elt.elements.original_defender),
+                primitive_expected(elt.elements, "name"),
+                primitive_expected(elt.elements, "original_attacker"),
+                primitive_expected(elt.elements, "original_defender"),
                 list_expected(elt.elements.attacker),
                 list_expected(elt.elements.defender),
                 load_history(elt.elements.history, parsers, default_parser),
@@ -188,7 +311,7 @@ define(["eu/model/api", "eu/utils"],
         for (var type in model.Battle.unit_types) {
             var units = model.Battle.unit_types[type];
 
-            if(units.filter(function(e) { return e in raw_attacker; })) {
+            if(units.filter(function(e) { return e in raw_attacker.elements; }).length !== 0) {
                 // At least one unit found
                 type = type;
                 break;
@@ -223,7 +346,7 @@ define(["eu/model/api", "eu/utils"],
 
         return new model.Battle(
             battle_section.elements["name"],
-            utils.parseDate(date),
+            date,
             parseInt(battle_section.elements["location"], 10),
             victory,
             type,
@@ -239,7 +362,17 @@ define(["eu/model/api", "eu/utils"],
 
             var single_element = true;
 
-            if(event_desc.elements_order) {
+            if(event_desc.constructor === Array) {
+                single_element = false;
+
+                for(var size = event_desc.length, i=0;
+                    i < size; i++) {
+                    events = events.concat(load_event(
+                        date, event_name,
+                        event_desc[i]
+                    ));
+                }
+            } else if(event_desc.elements_order) {
                 // Section found
                 single_element = false;
 
@@ -286,7 +419,7 @@ define(["eu/model/api", "eu/utils"],
             var date_event = history_section.elements[key];
 
             if(utils.isDate.test(key)) {
-                var date = utils.parseDate(key);
+                var date = key;
 
                 if(!history[date]) {
                     history[date] = [];
@@ -313,7 +446,7 @@ define(["eu/model/api", "eu/utils"],
                     }
                 }
             } else if(upper_date) {
-                var date = utils.parseDate(upper_date);
+                var date = upper_date;
 
                 if(!history[date]) {
                     history[date] = [];
@@ -333,6 +466,10 @@ define(["eu/model/api", "eu/utils"],
             for(var i in history) {
                 if(history[i].length === 0) {
                     delete history[i];
+                } else {
+                    history[i] = history[i].filter(function(e) {
+                        return e !== undefined && e !== null;
+                    });
                 }
             }
         }
@@ -340,41 +477,66 @@ define(["eu/model/api", "eu/utils"],
     };
 
     // Factorisation from many load
-    var primitive_expected = function primitive_expected(elt) {
-        if(!elt) {
+
+    var primitive_expected = function primitive_expected(elt, key) {
+        var e = key === undefined ? elt : elt[key];
+        if(e === null || e === undefined) {
             return null;
         }
-        if(elt.elements_order) {
-            if(elt.elements_order.length === 1) {
-                return primitive_expected(elt.elements[elt.elements_order[0]]);
+        if(e.elements_order) {
+            if(e.elements_order.length === 1) {
+                return primitive_expected(e.elements[e.elements_order[0]]);
             } else {
-                throw "Expected simple element but found a Section";
+                console.log("Expected simple element but found an invalid Section with "+e.elements_order.length+" elements for key: "+key);
+                return null;
             }
-        } else if(elt.constructor === Array) {
-            if(elt.length !== 1)
-                throw "Excpected simple element but found a list of many elements: "+elt;
-            return primitive_expected(elt[0]);
+        } else if(e.constructor === Array) {
+            var l = e.filter(function(se) {
+                // Avoid a bug with empty section
+                if(se.elements_order) {
+                    return se.elements[key];
+                } else {
+                    return se;
+                }
+                return result;
+            });
+            if(l.length !== 1) {
+                console.log("Expected simple element but found a list of many elements: "+l+" for key: "+key);
+                return null;
+            }
+            return primitive_expected(l[0], key);
         }
-        return elt;
-    }
+        return e;
+    };
 
-    var list_expected = function list_expected(elt) {
-        if(!elt) {
+    var list_expected = function list_expected(elt, key) {
+        var e = key === undefined ? elt : elt[key];
+        if(!e) {
             return [];
         }
-        if(elt.constructor !== Array) {
-            if(elt.elements_order) {
-                if(elt.elements_order.length === 1) {
-                    return list_expected(elt.elements_order[0]);
+        var ret = e;
+        if(e.constructor !== Array) {
+            if(e.elements_order) {
+                if(e.elements_order.length === 1) {
+                    ret = list_expected(e.elements[e.elements_order[0]]);
                 } else {
-                    throw "Expected a list but found a Section";
+                    throw "Expected a list but found an invalid Section: "+e;
                 }
-            } else {
-                return [elt];
+            }  else {
+                ret = [e];
             }
         }
-        return elt;
-    }
+
+        return ret.map(function(e) {
+            return primitive_expected(e);
+        }).filter(function(e) {
+            return e !== null && e !== undefined;
+        });
+    };
+
+    var leader_date = function leader_date(date) {
+        return !date || date === "1.1.1" || date === "9999.1.1" ? null : date;
+    };
 
     return load_game;
 });

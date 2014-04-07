@@ -19,8 +19,13 @@ requirejs(["eu/save_reader", "eu/load_game"], function(save_reader, load_game) {
                 console.log("Error: " + err);
             } else {
                 var game = load_game(save);
-                var cache = [];
-                console.log(JSON.stringify(game));/*, function(key, value) {
+
+                // Output JSON game to terminal
+                console.log(JSON.stringify(game));
+
+                // Comment previous block with /* to allow circular protection
+                /*/var cache = [];
+                console.log(JSON.stringify(game, function(key, value) {
                     if (typeof value === 'object' && value !== null) {
                         if (cache.indexOf(value) !== -1) {
                             // Circular reference found, discard key
@@ -30,7 +35,7 @@ requirejs(["eu/save_reader", "eu/load_game"], function(save_reader, load_game) {
                         cache.push(value);
                     }
                     return value;
-                }));*/
+                }));//*/
             }
         });
     } else {

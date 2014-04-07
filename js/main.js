@@ -10,53 +10,6 @@ require.config({
 require(["eu/save_reader", "ui/drop_down_list", "eu/load_game"],
         function(save_reader, drop_down_list, load_game) {
 
-    function ul(elt) {
-        return "<ul>"+elt+"</ul>";
-    }
-    function li(elt) {
-        return "<li>"+elt+"</li>";
-    }
-    function section_key(elt, key) {
-        return '<span class="eu-section-key">' + key + '</span>: ' + elt[key];
-    }
-    function array_elt(elt, key) {
-        return '<li class="eu-array-elt">' + key + '</li>: ' + elt[key]
-    }
-    function list_key(elt, key) {
-        var s = "";
-
-        for (var size = elt[key].length, i = 0; i < size; i++) {
-            var e = elt[key][i];
-            s += li(e);
-        };
-
-        return '<span class="eu-list-key">' + key + '</span>:' + ul(s);
-    }
-    function complex_html(e, key) {
-        var elt = e[key];
-        for (var size = elt[key].length, i = 0; i < size; i++) {
-            var e = elt[key][i];
-            s += li(e);
-        };
-        return '<span class="eu-list-key">' + key + '</span>:' + ul(s);
-    }
-
-    function to_html(game) {
-        var s = "";
-
-        s += li(section_key(game, "start_date"));
-        s += li(section_key(game, "date"));
-        s += li(section_key(game, "player"));
-        s += li(list_key(game, "players"));
-
-        s += li(complex_html(game, "religions"))
-        s += li(complex_html(game, "provinces"))
-        s += li(complex_html(game, "countries"))
-        s += li(complex_html(game, "wars"))
-
-        return '<p>Game:</p>\n' + ul(s) + '</ul>\n'; 
-    };
-
     /*
      * Browser side
      */
@@ -66,19 +19,31 @@ require(["eu/save_reader", "ui/drop_down_list", "eu/load_game"],
         var save_filepath = evt.target.files[0];
 
         var reader = new FileReader();
+        var d = new Date().getTime();
         reader.onload = (function(file) {
             return function(e) {
-                console.log('Read '+file.name);
-                var save = save_reader.from_string(e.target.result);
+                var save;
 
-                console.log('Write save '+save);
-                document.game = load_game(save);
-                document.getElementById('save-output').innerHTML = to_html(document.game);
+                var read_time = bench(function() {
+                    save = save_reader.from_string(e.target.result);
+                });
 
-                drop_down_list();//'#save-output');
+                var decode_time = bench(function() {
+                    document.game = load_game(save);
+                });
+                //document.getElementById('save-output').innerHTML = JSON.stringify(document.game);
+
+                console.warn(">> Read file during "+(read_time)+" seconds.")
+                console.warn(">> Decode file during "+(decode_time)+" seconds.")
             }
         })(save_filepath);
         reader.readAsText(save_filepath);
+    }
+
+    function bench(callable) {
+        var bench = new Date().getTime();
+        callable();
+        return (new Date().getTime() - bench)/1000;
     }
 
     function main_save_reader() {
