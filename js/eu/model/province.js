@@ -1,7 +1,7 @@
-define(function() {
+define(["underscore"], function(_) {
 
     var Province = function Province(id, current, original, history) {
-        // Province id
+        // Province id (Integer)
         this.id = id;
 
         // Default attributes are current province state
@@ -10,54 +10,58 @@ define(function() {
         // original contains original attributes
         this.original = this.parseProvince(original);
 
-        var tests = [this.current.culture, this.original.culture];
-        for (var i = tests.length - 1; i >= 0; i--) {
-            var test = tests[i];
-            for(var j in test) {
-                if(j.constructor === Array) {
-                    for (var k = j.length - 1; k >= 0; k--) {
-                        var t = j[k];
-                        if(t["parent"]) {
-                            console.log("parent found for "+test+", "+j+", "+k)
-                        }
-                    };
-                } else {
-                    if(j["parent"]) {
-                        console.log("parent found for "+test+", "+j+", "+i)
-                    }
-                }
-            }
-        };
-
-        // A list of history event with date = list of events
+        // A list of history event associated with a date
+        // An event can be:
+        // - a model.HistoryEvent with name contained in Province.prototype.simple_events
+        // - a model.HistoryEvent "building" constructed with value = building's name
         this.history = history;
     };
 
-    Province.prototype.parseProvince = function parseProvince(characteristics) {
-        return {
-            name: characteristics.name,
-            culture: characteristics.culture,
-            religion: characteristics.religion,
-            capital: characteristics.capital,
-            trade_goods: characteristics.trade_goods,
-            hre: characteristics.hre,
-            base_tax: characteristics.base_tax,
-            manpower: characteristics.manpower,
+    Province.prototype.simple_events = [
+        "controller","add_claim","remove_claim", "owner",
+        "add_core","remove_core","hre","culture","religion", "base_tax",
+        "revolt_risk", "capital", "manpower", "name", "trade_goods",
+        "citysize", "colonysize", "native_ferocity", "native_hostileness", "native_size"
+    ];
+    Province.prototype.useless_events = ["discovered_by"];
 
-            // Discovered province only
-            is_city: characteristics.is_city,
-            owner: characteristics.owner,
-            controller: characteristics.controller,
-            // Note: core is a list
-            core: characteristics.core,
-            trade: characteristics.trade,
+    // province state tools
 
-            // Undiscovered province only
-            native_size: characteristics.native_size,
-            native_ferocity: characteristics.native_ferocity,
-            native_hostileness: characteristics.native_hostileness
+    Province.prototype.state_attrs = [
+        // Mandatories attributes
+        "name", "religion", "capital", "culture",
+        "trade_goods", "hre", "base_tax", "manpower",
+
+        // Discovered province only
+        "is_city", "owner", "controller",
+        "trade",
+
+        // Undiscovered province only
+        "native_size", "native_ferocity", "native_hostileness"
+    ];
+
+    Province.prototype.state_attrs_list = [
+        // Discovered province only
+        "core"
+    ];
+
+    // Filter object with only state_attrs's keys
+    Province.prototype.parseProvince = function parseProvinceState(
+            characteristics, simple_callback, list_callback) {
+        var attrs = _.pick(characteristics, Province.prototype.state_attrs);
+        if(simple_callback) {
+            attrs = Array.prototype.map.call(attrs, simple_callback);
         }
+
+        var l_attrs = _.pick(characteristics, Province.prototype.state_attrs_list);
+        if(list_callback) {
+            l_attrs = Array.prototype.map.call(l_attrs, list_callback);
+        }
+
+        return _.extend(attrs, l_attrs);
     };
 
     return Province;
 });
+
+

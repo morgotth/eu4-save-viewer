@@ -53,6 +53,12 @@ define(["eu/model/api", "eu/utils"],
                 return new model.HistoryEvent("revolt", event_desc.type || "");
             },
             advisor: function(date, event_desc) {
+                // TODO : advisor always null
+                console.log(event_desc);
+                console.log("===")
+                if(event_desc.elements) {
+                    event_desc = event_desc.elements;
+                }
                 return new model.Advisor({
                     name: primitive_expected(event_desc, "name"),
                     type: primitive_expected(event_desc, "type"),
@@ -65,47 +71,22 @@ define(["eu/model/api", "eu/utils"],
             }
         }
         function load_province(province_s) {
-            return {
-                name: primitive_expected(province_s, "name"),
-                culture: list_expected(province_s, "culture"),
-                religion: primitive_expected(province_s, "religion"),
-                capital: primitive_expected(province_s, "capital"),
-                trade_goods: primitive_expected(province_s, "trade_goods"),
-                hre: primitive_expected(province_s, "hre"),
-                base_tax: primitive_expected(province_s, "base_tax"),
-                manpower: primitive_expected(province_s, "manpower"),
-
-                // Discovered province only
-                is_city: province_s["is_city"] && primitive_expected(province_s, "is_city"),
-                owner: province_s["owner"] && primitive_expected(province_s, "owner"),
-                controller: province_s["controller"] && primitive_expected(province_s, "controller"),
-                trade: province_s["trade"] && primitive_expected(province_s, "trade"),
-                core: province_s["core"] && list_expected(province_s["core"]),
-
-                // Undiscovered province only
-                native_size: province_s["native_size"] && primitive_expected(province_s, "native_size"),
-                native_ferocity: province_s["native_ferocity"] && primitive_expected(province_s, "native_ferocity"),
-                native_hostileness: province_s["native_hostileness"] && primitive_expected(province_s, "native_hostileness")
-            }
+            return model.Province.prototype.parseProvince(province_s, primitive_expected, list_expected);
         }
-        var single_events = [
-            "controller","add_claim","remove_claim", "owner",
-            "add_core","remove_core","hre","culture","religion", "base_tax",
-            "revolt_risk", "capital", "manpower", "name", "trade_goods",
-            "citysize", "colonysize", "native_ferocity", "native_hostileness", "native_size"
-        ];
-        var useless_events = ["discovered_by"];
 
         var default_parser = function(date, event_name, event_desc) {
             var event_history = null;
 
-            if(event_desc === "yes") {
-                event_history = new model.HistoryEvent("building", event_name);
-            } else if(utils.contains(event_name, single_events)) {
+            if(utils.contains(event_name, model.Province.prototype.simple_events)) {
+                // Save HistoryEvent
                 event_history = new model.HistoryEvent(
                     event_name,
                     primitive_expected(event_desc));
-            } else if(!utils.contains(event_name, useless_events)) {
+            } else if(event_desc === "yes") {
+                // "building_name = yes" found
+                event_history = new model.HistoryEvent("building", event_name);
+            } else if(!utils.contains(event_name, model.Province.prototype.useless_events)) {
+                // Not an expected useless event
                 console.log("Unexpected province event "+event_name+": "+event_desc);
             }
 
@@ -209,10 +190,10 @@ define(["eu/model/api", "eu/utils"],
         var default_parser = function(date, event_name, event_desc) {
             var event_history = null;
 
-            if(event_desc === "yes") {
-                event_history = new model.HistoryEvent("idea", event_name)
-            } else if(utils.contains(event_name, single_events)) {
+            if(utils.contains(event_name, single_events)) {
                 event_history = new model.HistoryEvent(event_name, primitive_expected(event_desc));
+            } else if(event_desc === "yes") {
+                event_history = new model.HistoryEvent("idea", event_name)
             } else {
                 console.log("Unexpected country event "+event_name+": "+event_desc);
             }
@@ -478,8 +459,12 @@ define(["eu/model/api", "eu/utils"],
 
     // Factorisation from many load
 
+    // Return a primitive element (not an Array or Object)
+    // Parameters:
+    // - elt: variable to analyse
+    // - key: optionnal key for indexing
     var primitive_expected = function primitive_expected(elt, key) {
-        var e = key === undefined ? elt : elt[key];
+        var e = key === undefined ? elt : elt.elements_order? elt.elements[key] : elt[key];
         if(e === null || e === undefined) {
             return null;
         }
@@ -509,6 +494,7 @@ define(["eu/model/api", "eu/utils"],
         return e;
     };
 
+    // Same behavior than primitive_expected but with a list.
     var list_expected = function list_expected(elt, key) {
         var e = key === undefined ? elt : elt[key];
         if(!e) {

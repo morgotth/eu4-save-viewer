@@ -1,21 +1,28 @@
-define(function() {
+define(["underscore"], function(_) {
 
     var Advisor = function Advisor(advisor) {
-        // Advisor name
-        this.name = advisor.name;
-        // fortification_expert, etc
-        this.type = advisor.type;
-        // Skill: Integer
-        this.skill = advisor.skill;
-        // Location: Province id
-        this.location = advisor.location;
-        // A date
-        this.date = advisor.date;
-        // Optionnal hire date
-        this.hire_date = advisor.hire_date || null;
-        // Optionnal death date
-        this.death_date = advisor.death_date || null;
+        var attrs = _.pick(advisor, Advisor.prototype.attrs);
+        for(var i in attrs) {
+            this[i] = attrs[i];
+        }
     };
+
+    Advisor.prototype.attrs = [
+        // Advisor name
+        "name",
+        // fortification_expert, etc
+        "type",
+        // Skill: Integer
+        "skill",
+        // Location: Province id
+        "location",
+        // A date
+        "date",
+        // Optionnal hire date
+        "hire_date",
+        // Optionnal death date
+        "death_date"
+    ];
 
     Advisor.types = {
         // TODO

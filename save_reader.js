@@ -4,11 +4,12 @@ var requirejs = require('requirejs');
 
 requirejs.config({
     // Default root directory
-    baseUrl: 'js'
-    //Pass the top-level main.js/index.js require
-    //function to requirejs so that node modules
-    //are loaded relative to the top-level JS file.
-    //nodeRequire: require
+    baseUrl: 'js',
+    // Bypass baseUrl for each module that begin with following paths
+    paths: {
+        jquery: 'libs/jquery-2.1.0',
+        underscore: 'libs/underscore-1.6.0'
+    }
 });
 
 // Hit from sebastianpatten.wordpress.com/2011/12/13/node-sharing-javascript-code-between-client-and-server/

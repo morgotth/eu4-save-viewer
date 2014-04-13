@@ -3,10 +3,14 @@
 var requirejs = require('requirejs');
 
 requirejs.config({
-    baseUrl: '../js'
+    baseUrl: 'js',
+    paths: {
+        jquery: 'libs/jquery-2.1.0',
+        underscore: 'libs/underscore-1.6.0'
+    }
 });
 
-requirejs(["eu/model/api"], function(api) {
+requirejs(["eu/model/api", "../tests/test"], function(api, Test) {
     // Build some objects
     var battle = new api.Battle("name", "1572.9.22", "location", "victory",
         "type", "attacker", "defender");
@@ -37,23 +41,18 @@ requirejs(["eu/model/api"], function(api) {
     Test.assertEquals(war.defenders, "defenders");
     Test.assertEquals(war.history, "history");
     Test.assertEquals(war.casus_belli.type, "casus_belli");
-});
 
-var Test = {
-    quiet: true,
-    fail: function (actual, expected, message) {
-        console.error(message !== undefined ? message : "Error, expected "+expected+" but actual is "+actual);
-    },
-    assertEquals: function(actual, expected, message) {
-        if(actual !== expected)
-            Test.fail(actual, expected, message);
-        else if(!Test.quiet)
-            console.log("Valid " + expected);
-    },
-    assertSimilar: function (actual, expected, message) {
-        if(actual.toString() !== expected.toString())
-            Test.fail(actual, expected, message);
-        else if(!Test.quiet)
-            console.log("Valid " + expected);
+    var attrs = {
+        "name": "name_val",
+        "type": "type_val",
+        "skill": "skill_val",
+        "location": "location_val",
+        "date": "date_val",
+        "hire_date": "hire_date_val",
+        "death_date": "death_date_val"
+    };
+    var advisor = new api.Advisor(attrs);
+    for(var i in attrs) {
+        Test.assertSimilar(advisor[i], attrs[i], "Invalid "+i+": "+advisor[i]);
     }
-}
+});

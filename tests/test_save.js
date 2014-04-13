@@ -3,24 +3,17 @@
 var requirejs = require('requirejs');
 
 requirejs.config({
-    // Default root directory
-    baseUrl: '../js'
-    //Pass the top-level main.js/index.js require
-    //function to requirejs so that node modules
-    //are loaded relative to the top-level JS file.
-    //nodeRequire: require
+    baseUrl: 'js'
 });
 
-requirejs(["eu/save", "eu/save_reader"], function main(Save, reader) {
-    reader.from_local_file("../samples/cardinals.eu4", function assert_res(err, save) {
+requirejs(["eu/save", "eu/save_reader", "../tests/test"], function main(Save, reader, Test) {
+    reader.from_local_file("tests/samples/cardinals.eu4", function assert_res(err, save) {
         if(err) {
             console.error(err);
             return;
         }
 
         var root = save.root;
-
-        Test.quiet = true;
 
         Test.assertEquals(root.name, undefined, "Root section has not an undefined name.");
         Test.assertEquals(root.elements_order.length, 4);
@@ -59,26 +52,5 @@ requirejs(["eu/save", "eu/save_reader"], function main(Save, reader) {
 
         Test.assertEquals(cardinals[1].elements['name'], 'Pizarro');
         Test.assertEquals(cardinals[2].elements['name'], 'Carleton');
-
-        Test.quiet = false;
     });
 });
-
-var Test = {
-    quiet: false,
-    fail: function (actual, expected, message) {
-        console.error(message !== undefined ? message : "Error, expected "+expected+" but actual is "+actual);
-    },
-    assertEquals: function(actual, expected, message) {
-        if(actual !== expected)
-            Test.fail(actual, expected, message);
-        else if(!Test.quiet)
-            console.log("Valid " + expected);
-    },
-    assertSimilar: function (actual, expected, message) {
-        if(actual.toString() !== expected.toString())
-            Test.fail(actual, expected, message);
-        else if(!Test.quiet)
-            console.log("Valid " + expected);
-    }
-}

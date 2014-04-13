@@ -3,7 +3,8 @@ require.config({
     baseUrl: 'js',
     // Bypass baseUrl for each module that begin with following paths
     paths: {
-        jquery: 'libs/jquery-2.1.0'
+        jquery: 'libs/jquery-2.1.0',
+        underscore: 'libs/underscore-1.6.0'
     }
 });
 
