@@ -14,7 +14,11 @@
 		}
 	</style>
 
-	<script data-main="js/main" src="node_modules/requirejs/require.js" async defer></script>
+	<!-- Non minified version -->
+	<!--script data-main="js/eu4-save-viewer" src="node_modules/requirejs/require.js" async defer></script> <!-- -->
+
+	<!-- Minified version -->
+	<script data-main="build/eu4-save-viewer.min" src="node_modules/requirejs/require.js" async defer></script> <!-- -->
 </head>
 <body>
 	<p>JSON url: <input type="file" id="eu_save_selector" name="eu_save_selector"></p>

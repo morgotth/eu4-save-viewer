@@ -2,18 +2,9 @@
 
 var requirejs = require('requirejs');
 
-requirejs.config({
-    // Default root directory
-    baseUrl: 'js',
-    // Bypass baseUrl for each module that begin with following paths
-    paths: {
-        jquery: 'libs/jquery-2.1.0',
-        underscore: 'libs/underscore-1.6.0'
-    }
-});
-
 // Hit from sebastianpatten.wordpress.com/2011/12/13/node-sharing-javascript-code-between-client-and-server/
-requirejs(["eu/save_reader", "eu/load_game"], function(save_reader, load_game) {
+requirejs(["js/config", "eu/save_reader", "eu/load_game"],
+        function(config, save_reader, load_game) {
     if(process.argv.length > 2) {
         save_reader.from_local_file(process.argv[2], function(err, save) {
             if(err) {

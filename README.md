@@ -1,5 +1,8 @@
 
-# Requirements
+# Installation
 
-* requirejs
+```bash
+npm install -g grunt-cli
+npm run build
+```
 

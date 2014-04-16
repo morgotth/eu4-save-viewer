@@ -1,0 +1,32 @@
+{
+  "name": "eu4-save-viewer",
+  "version": "0.0.1",
+  "description": "An Europa Universalis 4 save viewer",
+  "main": "js/main.js",
+  "directories": {
+    "test": "tests"
+  },
+  "dependencies": {
+    "requirejs": "~2.1.11",
+    "underscore": "^1.6.0",
+    "jquery": "^2.1.0"
+  },
+  "devDependencies": {
+    "grunt": "^0.4.4",
+    "grunt-requirejs": "^0.4.1"
+  },
+  "scripts": {
+    "build": "npm install && grunt",
+    "test": "echo 'Error: no test specified'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/morgotth/eu4-save-viewer.git"
+  },
+  "author": "Morgotth",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/morgotth/eu4-save-viewer/issues"
+  },
+  "homepage": "https://github.com/morgotth/eu4-save-viewer"
+}

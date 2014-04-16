@@ -1,15 +1,6 @@
-require.config({
-    // Default root directory
-    baseUrl: 'js',
-    // Bypass baseUrl for each module that begin with following paths
-    paths: {
-        jquery: 'libs/jquery-2.1.0',
-        underscore: 'libs/underscore-1.6.0'
-    }
-});
-
-require(["eu/save_reader", "ui/drop_down_list", "eu/load_game"],
-        function(save_reader, drop_down_list, load_game) {
+// Include config to configure requirejs aliases, etc
+require(["config", "eu/save_reader", "ui/drop_down_list", "eu/load_game"],
+        function(config, save_reader, drop_down_list, load_game) {
 
     /*
      * Browser side
