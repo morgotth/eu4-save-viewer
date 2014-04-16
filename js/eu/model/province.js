@@ -50,12 +50,16 @@ define(["underscore"], function(_) {
             characteristics, simple_callback, list_callback) {
         var attrs = _.pick(characteristics, Province.prototype.state_attrs);
         if(simple_callback) {
-            attrs = Array.prototype.map.call(attrs, simple_callback);
+            attrs = _.object(_.map(attrs, function (elt, key) {
+                return [key, simple_callback(elt)];
+            }));
         }
 
         var l_attrs = _.pick(characteristics, Province.prototype.state_attrs_list);
         if(list_callback) {
-            l_attrs = Array.prototype.map.call(l_attrs, list_callback);
+            l_attrs = _.object(_.map(l_attrs, function (elt, key) {
+                return [key, list_callback(elt)];
+            }));
         }
 
         return _.extend(attrs, l_attrs);
