@@ -36,7 +36,7 @@ define(["eu/model/api", "eu/utils"],
     // First section parsers
 
     // Load religions root's section and their characteristics
-    var load_religions = function load_religions(religions_section) {
+    function load_religions(religions_section) {
         var religions = {};
         for(var religion_name in religions_section.elements) {
             religions[religion_name] = {
@@ -47,15 +47,13 @@ define(["eu/model/api", "eu/utils"],
         return religions;
     };
 
-    var load_provinces = function load_provinces(provinces_section) {
+    function load_provinces(provinces_section) {
         var parsers = {
             revolt: function(date, event_desc) {
                 return new model.HistoryEvent("revolt", event_desc.type || "");
             },
             advisor: function(date, event_desc) {
                 // TODO : advisor always null
-                console.log(event_desc);
-                console.log("===")
                 if(event_desc.elements) {
                     event_desc = event_desc.elements;
                 }
@@ -113,7 +111,7 @@ define(["eu/model/api", "eu/utils"],
         return provinces;
     };
 
-    var load_countries = function load_countries(countries_section) {
+    function load_countries(countries_section) {
         function load_man(type, section) {
             if(section.elements) {
                 section = section.elements;
@@ -220,7 +218,7 @@ define(["eu/model/api", "eu/utils"],
         return countries;
     };
 
-    var load_wars = function load_wars(wars_l) {
+    function load_wars(wars_l) {
         var parsers = {
             battle: load_battle
         };
@@ -280,7 +278,7 @@ define(["eu/model/api", "eu/utils"],
 
     // Sub section parsers
 
-    var load_battle = function load_battle(date, battle_section) {
+    function load_battle(date, battle_section) {
         // "yes" / "no" are values in EU save file.
         var victory = (battle_section.elements["result"] === "yes");
 
@@ -336,7 +334,7 @@ define(["eu/model/api", "eu/utils"],
         )
     };
 
-    var load_history = function load_history(history_section, parsers, default_parser, upper_date) {
+    function load_history(history_section, parsers, default_parser, upper_date) {
         // Load an event (name is not a date) with parsers provided
         function load_event(date, event_name, event_desc) {
             var events = [];
@@ -463,7 +461,7 @@ define(["eu/model/api", "eu/utils"],
     // Parameters:
     // - elt: variable to analyse
     // - key: optionnal key for indexing
-    var primitive_expected = function primitive_expected(elt, key) {
+    function primitive_expected(elt, key) {
         var e = key === undefined ? elt : elt.elements_order? elt.elements[key] : elt[key];
         if(e === null || e === undefined) {
             return null;
@@ -495,7 +493,7 @@ define(["eu/model/api", "eu/utils"],
     };
 
     // Same behavior than primitive_expected but with a list.
-    var list_expected = function list_expected(elt, key) {
+    function list_expected(elt, key) {
         var e = key === undefined ? elt : elt[key];
         if(!e) {
             return [];
@@ -520,9 +518,20 @@ define(["eu/model/api", "eu/utils"],
         });
     };
 
-    var leader_date = function leader_date(date) {
+    function leader_date(date) {
         return !date || date === "1.1.1" || date === "9999.1.1" ? null : date;
     };
+
+    // Allow testing
+    load_game.load_religions = load_religions;
+    load_game.load_provinces = load_provinces;
+    load_game.load_countries = load_countries;
+    load_game.load_wars = load_wars;
+    load_game.load_battle = load_battle;
+    load_game.load_history = load_history;
+    load_game.primitive_expected = primitive_expected;
+    load_game.list_expected = list_expected;
+    load_game.leader_date = leader_date;
 
     return load_game;
 });
